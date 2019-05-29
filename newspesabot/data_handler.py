@@ -11,7 +11,7 @@ class DataHandler:
         last_update = time.time()
         key = {"user_id": user_id}
         collection.update_one(key, {'$addToSet': {"list": {"name": obj, "delete_date": last_update + TIMEOUT}}}, upsert=True)
-        collection.insert_one(key, {"last_update": last_update})
+        collection.update_one(key, {'$set': {"last_update": last_update}})
         # cls.delete_timed_out_elements(key, collection)
 
     @classmethod
@@ -21,7 +21,14 @@ class DataHandler:
     @classmethod
     def get_elements(cls, user_id: str, collection) -> list:
         document = collection.find_one({"user_id": user_id})
-        return document['list']
+        elements = ""
+        for element in document['list']:
+            elements = elements + '\n' + element["name"]
+        return elements
+
+    @classmethod
+    def delete_all(cls, user_id: str, collection):
+        collection.update( {"user_id": user_id}, {'$unset': {"list": ""}})
 
     @classmethod
     def delete_timed_out_documents(cls):
