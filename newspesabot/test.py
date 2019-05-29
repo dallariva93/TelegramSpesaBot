@@ -22,6 +22,7 @@ bot.message_loop(on_chat_message)
 
 print('Listening ...')
 
-if __name__ == "__main__":
+
+def main():
     while 1:
         time.sleep(10)
